@@ -16,5 +16,4 @@
         android:id="@+id/mi_clear_browsing_data"
         android:title="Clear Browsing Data"
         />
-
 </menu>
