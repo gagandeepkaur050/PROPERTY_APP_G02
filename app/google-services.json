@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "379606688738",
+    "project_id": "property-g02",
+    "storage_bucket": "property-g02.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379606688738:android:b5d14e0ea21541ebb44fbb",
+        "android_client_info": {
+          "package_name": "com.example.property_app_g02"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUVVCfFLex-zUNKbpz1B0lJh3Oe6K_5dE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
