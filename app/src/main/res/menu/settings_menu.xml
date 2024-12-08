@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mi_new_tab"
+        android:title="New Tab"
+        />
+    <item
+        android:id="@+id/mi_incognito_tab"
+        android:title="Incognito Tab"
+        />
+    <item
+        android:id="@+id/mi_history"
+        android:title="History"
+        />
+    <item
+        android:id="@+id/mi_clear_browsing_data"
+        android:title="Clear Browsing Data"
+        />
+
+</menu>
