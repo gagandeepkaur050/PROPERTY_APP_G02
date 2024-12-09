@@ -56,11 +56,11 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 return true
             }
-            R.id.mi_history -> {
+            R.id.logout -> {
                 Log.d("TESTING", "History button clicked!")
                 return true
             }
-            R.id.mi_clear_browsing_data -> {
+            R.id.watchlist -> {
                 Log.d("TESTING", "Browing Data cleared!")
                 return true
             }
