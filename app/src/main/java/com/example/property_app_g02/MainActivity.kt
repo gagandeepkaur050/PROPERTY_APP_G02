@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 //                startActivity(intent)
 //                return true
 //            }
-            R.id.mi_incognito_tab -> {
+            R.id.userlogin -> {
                 Log.d("TESTING", "Incognito button clicked!")
                 return true
             }

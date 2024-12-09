@@ -5,8 +5,8 @@
         android:title="New Tab"
         />
     <item
-        android:id="@+id/mi_incognito_tab"
-        android:title="Incognito Tab"
+        android:id="@+id/userlogin"
+        android:title="User Login"
         />
     <item
         android:id="@+id/mi_history"
