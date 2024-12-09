@@ -10,9 +10,15 @@ class userlogin : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_userlogin)
-        ActivityUserloginBinding.inflate(layoutInflater)
+        binding = ActivityUserloginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        binding.btnGoBack.setOnClickListener {
+            // goes back to the originating screen (previous screen)
+            //  - Whichever screen sent you here
+            finish()
+        }
     }
+
 }
