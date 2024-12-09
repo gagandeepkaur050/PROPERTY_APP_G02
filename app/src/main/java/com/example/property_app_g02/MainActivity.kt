@@ -2,8 +2,10 @@ package com.example.property_app_g02
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.property_app_g02.databinding.ActivityMainBinding
 import com.google.firebase.Firebase
@@ -25,12 +27,12 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.setTitle("Property")
 
-        binding.btnLogin.setOnClickListener {
-            // navigate the user to Screen #2
-            // a. Create the Intent object
-            val intent: Intent = Intent(this@MainActivity, userlogin::class.java)
-            startActivity(intent)
-        }
+//        binding.btnLogin.setOnClickListener {
+//            // navigate the user to Screen #2
+//            // a. Create the Intent object
+//            val intent: Intent = Intent(this@MainActivity, userlogin::class.java)
+//            startActivity(intent)
+//        }
 
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -40,32 +42,32 @@ class MainActivity : AppCompatActivity() {
     }
 //
 //
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-////            R.id.mi_new_tab -> {
-////                Log.d("TESTING", "New Tab button clicked!")
-////                val intent = Intent(this@MainActivity, Screen2Activity::class.java)
-////                startActivity(intent)
-////                return true
-////            }
-//            R.id.userlogin -> {
-//                Log.d("TESTING", "Incognito button clicked!")
-//                val intent: Intent = Intent(this@MainActivity, userlogin::class.java)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+//            R.id.mi_new_tab -> {
+//                Log.d("TESTING", "New Tab button clicked!")
+//                val intent = Intent(this@MainActivity, Screen2Activity::class.java)
 //                startActivity(intent)
 //                return true
 //            }
-//            R.id.mi_history -> {
-//                Log.d("TESTING", "History button clicked!")
-//                return true
-//            }
-//            R.id.mi_clear_browsing_data -> {
-//                Log.d("TESTING", "Browing Data cleared!")
-//                return true
-//            }
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
-//
+            R.id.userlogin -> {
+                Log.d("TESTING", "Incognito button clicked!")
+                val intent: Intent = Intent(this@MainActivity, userlogin::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.mi_history -> {
+                Log.d("TESTING", "History button clicked!")
+                return true
+            }
+            R.id.mi_clear_browsing_data -> {
+                Log.d("TESTING", "Browing Data cleared!")
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
 
 
