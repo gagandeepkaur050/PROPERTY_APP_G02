@@ -58,10 +58,13 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.logout -> {
                 Log.d("TESTING", "History button clicked!")
+
                 return true
             }
             R.id.watchlist -> {
                 Log.d("TESTING", "Browing Data cleared!")
+                val intent: Intent = Intent(this@MainActivity, Watchlist::class.java)
+                startActivity(intent)
                 return true
             }
             else -> super.onOptionsItemSelected(item)
