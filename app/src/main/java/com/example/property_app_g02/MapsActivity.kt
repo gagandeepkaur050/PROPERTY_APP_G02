@@ -1,27 +1,29 @@
 package com.example.property_app_g02
 
-import android.graphics.BitmapFactory
+import android.content.Intent
 import android.location.Geocoder
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
-
+import androidx.appcompat.app.AppCompatActivity
+import com.example.property_app_g02.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.example.property_app_g02.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Locale
-import kotlin.math.max
-import kotlin.reflect.typeOf
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -31,13 +33,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var binding: ActivityMapsBinding
     lateinit var geocoder: Geocoder
     val db = Firebase.firestore
+    lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // watch btn code here
+        auth = FirebaseAuth.getInstance()
 
+        binding.btnWatchList.setOnClickListener {
+
+            val currentUser = auth.currentUser
+            if (currentUser != null) {
+                //Log.d(TAG, "User is already logged in: ${currentUser.email}")
+                val snackbar = Snackbar.make(binding.root, "LOGIN already!", Snackbar.LENGTH_LONG)
+                snackbar.show()
+                val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
+                startActivity(intent)
+
+            } else {
+                //Log.d(TAG, "No user is logged in.")
+                val intent = Intent(this@MapsActivity, MainActivity::class.java)
+                startActivity(intent)
+            }
+        }
         geocoder = Geocoder(applicationContext, Locale.getDefault())
 
         binding.btnSearch.setOnClickListener {
@@ -52,6 +73,43 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+// menu code here
+override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    val inflater: MenuInflater = menuInflater
+    inflater.inflate(R.menu.settings_menu, menu)
+    return true
+}
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.MainActivity -> {
+                Log.d("TESTING", "New Tab button clicked!")
+                val intent = Intent(this@MapsActivity, MainActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.logout -> {
+                Log.d("TESTING", "Incognito button clicked!")
+                auth.signOut()
+                finish()
+                return true
+            }
+            R.id.watchlist -> {
+//                val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
+//                startActivity(intent)
+                if (auth.currentUser == null) {
+                    // User not authenticated, navigate to MainActivity
+                    val intent = Intent(this@MapsActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    // User is authenticated, navigate to Watchlist
+                    val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
+                    startActivity(intent)
+                }
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
@@ -203,4 +261,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         Log.d("TESTING","${maxFromUI}")
 
     }
+
 }

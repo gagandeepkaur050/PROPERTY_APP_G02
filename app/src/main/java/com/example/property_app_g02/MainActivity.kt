@@ -1,13 +1,16 @@
 package com.example.property_app_g02
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.example.property_app_g02.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 
 class MainActivity : AppCompatActivity() {
@@ -20,12 +23,16 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = FirebaseAuth.getInstance()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TODO: Initialize Firebase auth
-        auth = Firebase.auth
+        supportActionBar!!.setTitle("Login")
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+        //auth = Firebase.auth
+        //loadUserData()
         // click handlers
         binding.btnLogin.setOnClickListener {
             // get email and password
@@ -33,6 +40,8 @@ class MainActivity : AppCompatActivity() {
             val passwordFromUI = binding.etPassword.text.toString()
             // try to login
             loginUser(emailFromUI, passwordFromUI)
+
+
         }
         binding.btnSignup.setOnClickListener {
             // get email and password
@@ -49,17 +58,51 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onStart() {
-        super.onStart()
-
-
-        // TODO: When app loads, check if a user is logged in
-        // TODO: IF yes, then directly navigate them to next page
-        // val intent = Intent(this@com.example.property_app_g02.MainActivity, Screen2::class.java)
-        // startActivity(intent)
+    // menu code here
+    // 1. Shows the menu , but it doesn't handle clicks on the menu
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.userscreen_menu, menu)
+        return true
     }
 
 
+    // 2. Handling clicks on items in the bar (back button and options menu)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // do something when the person presses back
+                Log.d("TESTING", "Back button clicked!")
+                finish()
+                return true
+            }
+            R.id.mi_go_back -> {
+                finish()
+                return true
+            }
+            R.id.logout -> {
+                Log.d("TESTING", "Incognito button clicked!")
+                auth.signOut()
+                finish()
+                return true
+            }
+            R.id.watchlist -> {
+                Log.d("TESTING", "History button clicked!")
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkIfUserLoggedIn()
+
+    }
 
 
     // helper functions for Firebase Auth
@@ -69,24 +112,26 @@ class MainActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 val snackbar = Snackbar.make(binding.root, "LOGIN SUCCESS!", Snackbar.LENGTH_LONG)
                 snackbar.show()
-
-
                 // disable or enable the login button
                 checkIfUserLoggedIn()
+                //val intent = Intent(this@MainActivity, WatchlistActivity::class.java)
+                ///startActivity(intent)
+                val intent = Intent(this@MainActivity, WatchlistActivity::class.java)
+                startActivity(intent)
+
             }
             .addOnFailureListener {
                     error ->
                 binding.tvResults.text = "LOGIN FAILURE, check Log.d"
                 Log.d("TESTING", "", error)
+                val snackbar = Snackbar.make(binding.root, "LOGIN fail!", Snackbar.LENGTH_LONG)
+                snackbar.show()
             }
     }
-
-
-    fun signupUser(email:String, password:String) {
+    private fun signupUser(email:String, password:String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener {
                 Snackbar.make(binding.root, "Account created in Firebase Auth", Snackbar.LENGTH_SHORT).show()
-
 
                 // If the user was successfully created
                 // create the corresponding user profile in firestore
@@ -100,6 +145,7 @@ class MainActivity : AppCompatActivity() {
                     .addOnSuccessListener { docRef ->
                         Log.d("TESTING", "Document successfully added with ID : ${docRef.id}")
                         binding.tvResults.text = "User profile created! ${docRef.id}"
+
                     }
                     .addOnFailureListener { ex ->
                         Log.e("TESTING", "Exception occurred while adding a document : $ex", )
