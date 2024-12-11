@@ -97,29 +97,38 @@ class WatchlistActivity : AppCompatActivity() {
                 // if you reach this point, then we found a student
                 Log.d("TESTING", user.toString())
 
-//                for ((index, value) in user.watchlist.withIndex()){
-//                    Log.d("TESTING",value)
-//                    db.collection("properties")
-//                        .document(value)
-//                        .get()
-//                        .addOnSuccessListener {
-//                            document2: DocumentSnapshot ->
-//                            val houseFromDb:House? = document.toObject(House::class.java)
-//                            if(houseFromDb == null){
-//                                Log.d("TESINTG","NULL HOUSE")
-//                                return@addOnSuccessListener
-//                            }
-//                        val price=houseFromDb.monthPrice.toString()
-//                            val numBeds = houseFromDb.numberOfBedrooms.toString()
-//                            val address = houseFromDb.address
-//
-//                            binding.priceText.text = price
-//                            binding.bedroomsText.text = numBeds
-//                            binding.addressText.text = address
-//                        }
-//
-//
-//                }
+                /*
+                val myArray = arrayOf("A", "B", "C", "D")
+
+for (i in 0 until myArray.size - 1) { // `until` excludes the last index
+    println(myArray[i])
+}
+
+                 */
+
+                for (i in 0 until user.watchlist.size - 1){
+                    Log.d("TESTING",user.watchlist[i])
+                    db.collection("properties")
+                        .document(user.watchlist[i])
+                        .get()
+                        .addOnSuccessListener {
+                            document2: DocumentSnapshot ->
+                            val houseFromDb:House? = document2.toObject(House::class.java)
+                            if(houseFromDb == null){
+                                Log.d("TESINTG","NULL HOUSE")
+                                return@addOnSuccessListener
+                            }
+                        val price=houseFromDb.monthPrice.toString()
+                            val numBeds = houseFromDb.numberOfBedrooms.toString()
+                            val address = houseFromDb.address
+
+                            binding.priceText.text = price
+                            binding.bedroomsText.text = numBeds
+                            binding.addressText.text = address
+                        }
+
+
+                }
 
 
             }.addOnFailureListener {
