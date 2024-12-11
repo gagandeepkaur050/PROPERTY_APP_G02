@@ -8,7 +8,9 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.property_app_g02.databinding.ActivityWatchlistBinding
+import com.example.property_app_g02.models.UserProfile
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -78,24 +80,51 @@ class WatchlistActivity : AppCompatActivity() {
         val userId = currentUser.uid
 
         // Fetch watchlist items for the current user
-        db.collection("properties")
+        db.collection("userProfiles")
             .document(userId)
-            .collection("address")
             .get()
-            .addOnSuccessListener { documents ->
-                val watchlistItems = documents.map { doc ->
-                    doc.getString("address") ?: "No Title" // Example field
+            .addOnSuccessListener {
+                    document: DocumentSnapshot ->
+
+                val user:UserProfile? = document.toObject(UserProfile::class.java)
+
+
+                if (user == null) {
+                    Log.d("TESTING", "No results found")
+                    return@addOnSuccessListener
                 }
 
-                // Set up RecyclerView
-//                binding.recyclerView.apply {
-//                    layoutManager = LinearLayoutManager(this@WatchlistActivity)
-//                    adapter = WatchlistAdapter(watchlistItems)
+                // if you reach this point, then we found a student
+                Log.d("TESTING", user.toString())
+
+//                for ((index, value) in user.watchlist.withIndex()){
+//                    Log.d("TESTING",value)
+//                    db.collection("properties")
+//                        .document(value)
+//                        .get()
+//                        .addOnSuccessListener {
+//                            document2: DocumentSnapshot ->
+//                            val houseFromDb:House? = document.toObject(House::class.java)
+//                            if(houseFromDb == null){
+//                                Log.d("TESINTG","NULL HOUSE")
+//                                return@addOnSuccessListener
+//                            }
+//                        val price=houseFromDb.monthPrice.toString()
+//                            val numBeds = houseFromDb.numberOfBedrooms.toString()
+//                            val address = houseFromDb.address
+//
+//                            binding.priceText.text = price
+//                            binding.bedroomsText.text = numBeds
+//                            binding.addressText.text = address
+//                        }
+//
+//
 //                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e("WatchlistActivity", "Error fetching watchlist: ", exception)
-                Toast.makeText(this, "Failed to load watchlist.", Toast.LENGTH_SHORT).show()
+
+
+            }.addOnFailureListener {
+                    exception ->
+                Log.w("TESTING", "Error getting documents.", exception)
             }
     }
 }
