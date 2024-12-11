@@ -88,9 +88,9 @@ override fun onCreateOptionsMenu(menu: Menu): Boolean {
                 return true
             }
             R.id.logout -> {
-                Log.d("TESTING", "Incognito button clicked!")
                 auth.signOut()
-                finish()
+                val snackbar = Snackbar.make(binding.root, "User Logout", Snackbar.LENGTH_LONG)
+                snackbar.show()
                 return true
             }
             R.id.watchlist -> {

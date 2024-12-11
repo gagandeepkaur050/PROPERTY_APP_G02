@@ -83,11 +83,23 @@ class MainActivity : AppCompatActivity() {
             R.id.logout -> {
                 Log.d("TESTING", "Incognito button clicked!")
                 auth.signOut()
-                finish()
+                val snackbar = Snackbar.make(binding.root, "User Logout", Snackbar.LENGTH_LONG)
+                snackbar.show()
+                //finish()
                 return true
             }
             R.id.watchlist -> {
-                Log.d("TESTING", "History button clicked!")
+//                val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
+//                startActivity(intent)
+                if (auth.currentUser == null) {
+                    // User not authenticated, navigate to MainActivity
+                    val intent = Intent(this@MainActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    // User is authenticated, navigate to Watchlist
+                    val intent = Intent(this@MainActivity, WatchlistActivity::class.java)
+                    startActivity(intent)
+                }
                 return true
             }
             else -> super.onOptionsItemSelected(item)
