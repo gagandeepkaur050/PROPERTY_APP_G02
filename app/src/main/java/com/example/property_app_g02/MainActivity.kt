@@ -13,7 +13,7 @@ import com.google.firebase.firestore.firestore
 class MainActivity : AppCompatActivity() {
     // TAG = used for Log.d
     private val TAG:String = "TESTING"
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     val db = Firebase.firestore
 
     lateinit var auth: FirebaseAuth
