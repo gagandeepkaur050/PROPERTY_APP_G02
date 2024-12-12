@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.property_app_g02.adapters.WatchlistAdapter
 import com.example.property_app_g02.databinding.ActivityWatchlistBinding
 import com.example.property_app_g02.models.UserProfile
-import com.google.android.play.integrity.internal.z
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -160,7 +159,7 @@ class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
                         .update("watchlist", ttt?.watchlist)
                         .addOnSuccessListener {
                             adapter.notifyItemRemoved(position)
-                            Log.d("TESTING", z"DELETE pass")
+                            Log.d("TESTING", "DELETE pass")
                         }
                         .addOnFailureListener {
                             Log.d("TESTING","DELETE FAIL")
