@@ -7,7 +7,7 @@ data class UserProfile(
     var id:String = "",
     var email:String = "",
     var password:String = "",
-    var watchlist:MutableList<String> = mutableListOf(""),
+    var watchlist:MutableList<String> = mutableListOf(),
     @JvmField
     var isLandlord:Boolean = false
 )

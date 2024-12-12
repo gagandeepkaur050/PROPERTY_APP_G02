@@ -83,8 +83,7 @@ class MainActivity : AppCompatActivity() {
             R.id.logout -> {
                 Log.d("TESTING", "Incognito button clicked!")
                 auth.signOut()
-                val snackbar = Snackbar.make(binding.root, "User Logout", Snackbar.LENGTH_LONG)
-                snackbar.show()
+
                 //finish()
                 return true
             }

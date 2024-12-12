@@ -7,10 +7,11 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.property_app_g02.adapters.WatchlistAdapter
 import com.example.property_app_g02.databinding.ActivityWatchlistBinding
 import com.example.property_app_g02.models.UserProfile
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -47,7 +48,6 @@ class WatchlistActivity : AppCompatActivity() {
         return true
     }
 
-
     // 2. Handling clicks on items in the bar (back button and options menu)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -70,7 +70,8 @@ class WatchlistActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-    private fun loadWatchlist() {
+
+    fun loadWatchlist() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             Toast.makeText(this, "User not authenticated!", Toast.LENGTH_SHORT).show()
@@ -78,62 +79,56 @@ class WatchlistActivity : AppCompatActivity() {
         }
 
         val userId = currentUser.uid
+        val watchlist = mutableListOf<House>()
+        val adapter = WatchlistAdapter(watchlist)
 
-        // Fetch watchlist items for the current user
+        // Set up RecyclerView
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = adapter
+
+        // Fetch user profile
         db.collection("userProfiles")
             .document(userId)
             .get()
-            .addOnSuccessListener {
-                    document: DocumentSnapshot ->
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val userProfile = document.toObject(UserProfile::class.java)
+                    val watchlistIds = userProfile?.watchlist ?: emptyList()
 
-                val user:UserProfile? = document.toObject(UserProfile::class.java)
+                    Log.d("TESTING", "Watchlist for $userId: $watchlistIds")
 
+                    if (watchlistIds.isEmpty()) {
+                        Toast.makeText(this, "Watchlist is empty.", Toast.LENGTH_SHORT).show()
+                        return@addOnSuccessListener
+                    }
 
-                if (user == null) {
-                    Log.d("TESTING", "No results found")
-                    return@addOnSuccessListener
-                }
-
-                // if you reach this point, then we found a student
-                Log.d("TESTING", user.toString())
-
-                /*
-                val myArray = arrayOf("A", "B", "C", "D")
-
-for (i in 0 until myArray.size - 1) { // `until` excludes the last index
-    println(myArray[i])
-}
-
-                 */
-
-                for (i in 0 until user.watchlist.size - 1){
-                    Log.d("TESTING",user.watchlist[i])
-                    db.collection("properties")
-                        .document(user.watchlist[i])
-                        .get()
-                        .addOnSuccessListener {
-                            document2: DocumentSnapshot ->
-                            val houseFromDb:House? = document2.toObject(House::class.java)
-                            if(houseFromDb == null){
-                                Log.d("TESINTG","NULL HOUSE")
-                                return@addOnSuccessListener
-                            }
-                        val price=houseFromDb.monthPrice.toString()
-                            val numBeds = houseFromDb.numberOfBedrooms.toString()
-                            val address = houseFromDb.address
-
-                            binding.priceText.text = price
-                            binding.bedroomsText.text = numBeds
-                            binding.addressText.text = address
+                    // Fetch each property from the watchlist
+                    for (propertyId in watchlistIds) {
+                        if (propertyId.isNotEmpty()) {
+                            db.collection("properties")
+                                .document(propertyId) // This should be a valid property document ID
+                                .get()
+                                .addOnSuccessListener { propertyDoc ->
+                                    val house = propertyDoc.toObject(House::class.java)
+                                    house?.let {
+                                        watchlist.add(it) // Add the house to the list
+                                        adapter.notifyItemInserted(watchlist.size - 1)
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.w("TESTING", "Error getting property: $propertyId", exception)
+                                }
+                        } else {
+                            Log.w("TESTING", "Invalid propertyId: $propertyId")
                         }
-
-
+                    }
+                } else {
+                    Log.d("TESTING", "No user profile found for ID: $userId")
                 }
-
-
-            }.addOnFailureListener {
-                    exception ->
-                Log.w("TESTING", "Error getting documents.", exception)
+            }
+            .addOnFailureListener { exception ->
+                Log.w("TESTING", "Error fetching user profile.", exception)
             }
     }
+
 }

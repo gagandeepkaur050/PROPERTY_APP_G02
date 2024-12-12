@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.property_app_g02.databinding.ActivityMapsBinding
-import com.example.property_app_g02.models.UserProfile
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -22,7 +21,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Locale
@@ -118,8 +116,6 @@ override fun onCreateOptionsMenu(menu: Menu): Boolean {
                 return true
             }
             R.id.watchlist -> {
-//                val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
-//                startActivity(intent)
                 if (auth.currentUser == null) {
                     // User not authenticated, navigate to MainActivity
                     val intent = Intent(this@MapsActivity, MainActivity::class.java)

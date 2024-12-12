@@ -1,66 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardCornerRadius="8dp"
-    android:layout_margin="8dp"
-    tools:context=".Watchlist">
+    android:layout_height="match_parent"
+    tools:context=".WatchlistActivity">
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Property Image -->
-<!--        <ImageView-->
-<!--            android:id="@+id/propertyImage"-->
-<!--            android:layout_width="80dp"-->
-<!--            android:layout_height="80dp"-->
-<!--            android:src="@drawable/ic_placeholder_image"-->
-<!--            android:layout_marginEnd="16dp"/>-->
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
-
-            <!-- Property Address -->
-            <TextView
-                android:id="@+id/addressText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Property Address"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <!-- Property Price -->
-            <TextView
-                android:id="@+id/priceText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$1200 / month"
-                android:textSize="14sp" />
-
-            <!-- Property Bedrooms -->
-            <TextView
-                android:id="@+id/bedroomsText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2 Bedrooms"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <!-- Remove from Watchlist Button -->
-<!--        <ImageButton-->
-<!--            android:id="@+id/removeButton"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_remove"-->
-<!--            android:contentDescription="Remove from Watchlist"-->
-<!--            android:layout_gravity="center_vertical"/>-->
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
