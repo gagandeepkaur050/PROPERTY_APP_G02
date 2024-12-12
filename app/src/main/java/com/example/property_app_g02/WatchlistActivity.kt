@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.property_app_g02.adapters.WatchlistAdapter
 import com.example.property_app_g02.databinding.ActivityWatchlistBinding
 import com.example.property_app_g02.models.UserProfile
+import com.google.android.play.integrity.internal.z
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -75,7 +76,7 @@ class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
         }
     }
 
-    fun loadWatchlist() {
+    private fun loadWatchlist() {
         val currentUser = auth.currentUser
         if (currentUser == null) {
             Toast.makeText(this, "User not authenticated!", Toast.LENGTH_SHORT).show()
@@ -112,21 +113,26 @@ class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
                                 .document(propertyId)
                                 .get()
                                 .addOnSuccessListener { propertyDoc ->
-                                    val house = propertyDoc.toObject(House::class.java)
-                                    house?.let {
-                                        watchlist.add(it)
-                                        adapter.notifyItemInserted(watchlist.size - 1)
+                                    if (propertyDoc.exists()) {
+                                        val house = propertyDoc.toObject(House::class.java)
+                                        house?.let {
+                                            watchlist.add(it) // Add the house
+                                            adapter.notifyItemInserted(watchlist.size - 1) // Notify adapter
+                                        }
+                                    } else {
+                                        Log.w("TESTING", "////Property not found for ID: $propertyId")
                                     }
                                 }
                                 .addOnFailureListener { exception ->
-                                    Log.w("TESTING", "Error getting property: $propertyId", exception)
+                                    Log.w("TESTING", "/////Error fetching property: $propertyId", exception)
                                 }
-                        } else {
-                            Log.w("TESTING", "Invalid propertyId: $propertyId")
+
+                    } else {
+                            Log.w("TESTING", "///Invalid propertyId: $propertyId")
                         }
                     }
                 } else {
-                    Log.d("TESTING", "No user profile found for ID: $userId")
+                    Log.d("TESTING", "////No user profile found for ID: $userId")
                 }
             }
             .addOnFailureListener { exception ->
@@ -135,12 +141,10 @@ class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
     }
 
     override fun deleteFunction(position: Int) {
-        this.adapter = WatchlistAdapter(watchlist,this)
+        ///this.adapter = WatchlistAdapter(watchlist,this)
 
         Log.d("TESTING","From deletefunction ${position}")
         Log.d("TESTING", "${auth.currentUser?.uid}")
-
-
 
         db.collection("userProfiles")
             .document(auth.currentUser?.uid ?: "")
@@ -149,12 +153,14 @@ class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
                 if (document.exists()) {
                     val ttt = document.toObject(UserProfile::class.java)
                     ttt?.watchlist?.removeAt(position)
+                    //added to update local list
+                    watchlist.removeAt(position)
                     db.collection("userProfiles")
                         .document(ttt?.id ?: "")
                         .update("watchlist", ttt?.watchlist)
                         .addOnSuccessListener {
-                           // this.adapter.notifyDataSetChanged()
-
+                            adapter.notifyItemRemoved(position)
+                            Log.d("TESTING", z"DELETE pass")
                         }
                         .addOnFailureListener {
                             Log.d("TESTING","DELETE FAIL")
@@ -174,4 +180,5 @@ class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
 
     }
 
-}}
+}
+}

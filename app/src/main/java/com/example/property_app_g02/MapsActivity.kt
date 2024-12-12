@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.property_app_g02.databinding.ActivityMapsBinding
+import com.example.property_app_g02.models.UserProfile
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -45,42 +46,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // watch btn code here
         auth = FirebaseAuth.getInstance()
 
-//        binding.btnWatchList.setOnClickListener {
-//
-//            val currentUser = auth.currentUser
-//            if (currentUser != null) {
-//                Log.d("TESTING", "User is already logged in: ${currentUser.email}")
-//                val snackbar = Snackbar.make(binding.root, "Added to your watch list!", Snackbar.LENGTH_LONG)
-//                snackbar.show()
-//
-//                db.collection("userProfiles")
-//                    .whereEqualTo("email",currentUser.email)
-//                    .get()
-//                    .addOnSuccessListener {
-//                            results:QuerySnapshot ->
-//
-//                        // 1. for each document in the collection,
-//                        for (document in results) {
-//                            // convert the document to a Student object
-//                            val user:UserProfile = document.toObject(UserProfile::class.java)
-//                            // 3. do something with the student
-//                            Log.d("TESTING", user.email)
-//                            user.watchlist.add("")
-//                        }
-//                    }.addOnFailureListener {
-//                            exception ->
-//                        Log.w("TESTING", "Error getting documents.", exception)
-//                    }
-//
-//                val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
-//                startActivity(intent)
-//
-//            } else {
-//                //Log.d(TAG, "No user is logged in.")
-//                val intent = Intent(this@MapsActivity, MainActivity::class.java)
-//                startActivity(intent)
-//            }
-//        }
         geocoder = Geocoder(applicationContext, Locale.getDefault())
 
         binding.btnSearch.setOnClickListener {
@@ -96,7 +61,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 // menu code here
-override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
     val inflater: MenuInflater = menuInflater
     inflater.inflate(R.menu.settings_menu, menu)
     return true
@@ -194,18 +159,17 @@ override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
     }
 
-    private fun getStreetAddress(latLng: LatLng){
-        Log.d("TESTING","GET ADDRESS, ${latLng.latitude},${latLng.longitude}")
+    private fun getStreetAddress(latLng: LatLng) {
+        Log.d("TESTING", "GET ADDRESS, ${latLng.latitude},${latLng.longitude}")
         db.collection("properties")
-            .whereEqualTo("lat",latLng.latitude)
-            .whereEqualTo("long",latLng.longitude)
+            .whereEqualTo("lat", latLng.latitude)
+            .whereEqualTo("long", latLng.longitude)
             .get()
-            .addOnSuccessListener {
-                    results:QuerySnapshot ->
+            .addOnSuccessListener { results: QuerySnapshot ->
                 for (document in results) {
-                    // convert the document to a Student object
-                    val houseFromDb:House = document.toObject(House::class.java)
-                    // 3. do something with the student
+                    // convert the document to a  object
+                    val houseFromDb: House = document.toObject(House::class.java)
+                    // 3. do something with the
                     Log.d("TESTING", "GETADDRESS,${houseFromDb.lat}, ${houseFromDb.long}")
 
                     val output = """
@@ -218,51 +182,121 @@ override fun onCreateOptionsMenu(menu: Menu): Boolean {
                         """.trimIndent()
                     binding.tvResults.text = output
                     binding.btnWatchList.visibility = View.VISIBLE
+/// updated testing gagan
 
                     binding.btnWatchList.setOnClickListener {
-
                         val currentUser = auth.currentUser
                         if (currentUser != null) {
                             Log.d("TESTING", "User is already logged in: ${currentUser.email}")
-                            val snackbar = Snackbar.make(binding.root, "Added to your watch list!", Snackbar.LENGTH_LONG)
-                            snackbar.show()
 
-                            watchlist.add(0,houseFromDb.id)
+                            if (houseFromDb.id.isEmpty()) {
+                                Log.w("TESTING", "Invalid house ID.")
+                                return@setOnClickListener
+                            }
 
                             db.collection("userProfiles")
                                 .document(currentUser.uid)
-                                .update("watchlist",watchlist)
-                                .addOnSuccessListener { docRef ->
-                                    Log.d("TESTING", "Document successfully updated")
+                                .get()
+                                .addOnSuccessListener { document ->
+                                    if (document.exists()) {
+                                        val userProfile = document.toObject(UserProfile::class.java)
+                                        val currentWatchlist =
+                                            userProfile?.watchlist?.toMutableList()
+                                                ?: mutableListOf()
+
+                                        if (!currentWatchlist.contains(houseFromDb.id)) {
+                                            currentWatchlist.add(houseFromDb.id)
+
+                                            db.collection("userProfiles")
+                                                .document(currentUser.uid)
+                                                .update("watchlist", currentWatchlist)
+                                                .addOnSuccessListener {
+                                                    Log.d("TESTING", "Property added to watchlist.")
+                                                    Snackbar.make(
+                                                        binding.root,
+                                                        "Added to your watchlist!",
+                                                        Snackbar.LENGTH_LONG
+                                                    ).show()
+                                                }
+                                                .addOnFailureListener { exception ->
+                                                    Log.e(
+                                                        "TESTING",
+                                                        "Failed to update watchlist.",
+                                                        exception
+                                                    )
+                                                }
+                                        } else {
+                                            Log.d("TESTING", "Property already in watchlist.")
+                                            Snackbar.make(
+                                                binding.root,
+                                                "This property is already in your watchlist.",
+                                                Snackbar.LENGTH_LONG
+                                            ).show()
+                                        }
+                                    } else {
+                                        Log.w(
+                                            "TESTING",
+                                            "User profile not found for ${currentUser.uid}."
+                                        )
+                                    }
                                 }
-                                .addOnFailureListener { ex ->
-                                    Log.e("TESTING", "Exception occurred while adding a document : $ex", )
+                                .addOnFailureListener { exception ->
+                                    Log.e("TESTING", "Error fetching user profile.", exception)
                                 }
-
-
-                            val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
-                            startActivity(intent)
-
                         } else {
-                            //Log.d(TAG, "No user is logged in.")
                             val intent = Intent(this@MapsActivity, MainActivity::class.java)
                             startActivity(intent)
                         }
                     }
-
-
-
-
-                     }
-            }.addOnFailureListener {
-                    exception ->
-                Log.w("TESTING", "Error getting documents.", exception)
+                }
             }
-
-
     }
 
-    private fun getMaximum(){
+
+//                    binding.btnWatchList.setOnClickListener {
+//
+//                        val currentUser = auth.currentUser
+//                        if (currentUser != null) {
+//                            Log.d("TESTING", "User is already logged in: ${currentUser.email}")
+//                            val snackbar = Snackbar.make(binding.root, "Added to your watch list!", Snackbar.LENGTH_LONG)
+//                            snackbar.show()
+//
+//                            watchlist.add(0,houseFromDb.id)
+//
+//                            db.collection("userProfiles")
+//                                .document(currentUser.uid)
+//                                .update("watchlist",watchlist)
+//                                .addOnSuccessListener { docRef ->
+//                                    Log.d("TESTING", "Document successfully updated")
+//                                }
+//                                .addOnFailureListener { ex ->
+//                                    Log.e("TESTING", "Exception occurred while adding a document : $ex", )
+//                                }
+//
+//
+//                            val intent = Intent(this@MapsActivity, WatchlistActivity::class.java)
+//                            startActivity(intent)
+//
+//                        } else {
+//                            //Log.d(TAG, "No user is logged in.")
+//                            val intent = Intent(this@MapsActivity, MainActivity::class.java)
+//                            startActivity(intent)
+//                        }
+//                    }
+//
+//
+//
+//
+//                     }
+//            }.addOnFailureListener {
+//                    exception ->
+//                Log.w("TESTING", "Error getting documents.", exception)
+//            }
+//
+
+
+
+    fun getMaximum(){
         var maxFromUI = binding.etMaximum.text.toString().toDoubleOrNull()
 
         if(maxFromUI == null){
