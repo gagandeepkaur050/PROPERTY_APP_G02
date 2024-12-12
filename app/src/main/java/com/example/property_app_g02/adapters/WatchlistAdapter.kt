@@ -13,10 +13,9 @@ class WatchlistAdapter(
     // ViewHolder class for item views
     inner class WatchlistViewHolder(private val binding: WatchlistItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(house: House) {
-            binding.addressText.setText(house.address)
-            // Bind other properties if necessary
-            binding.priceText.text = house.monthPrice.toString()  // Uncomment if you have price
-            binding.bedroomsText.text = house.numberOfBedrooms.toString()  // Uncomment if you have numberOfBedrooms
+            binding.addressText.setText("Adress: " + house.address)
+            binding.priceText.text = "Price: $" +house.monthPrice.toString()
+            binding.bedroomsText.text = "Bedrooms: " + house.numberOfBedrooms.toString()
         }
     }
 
