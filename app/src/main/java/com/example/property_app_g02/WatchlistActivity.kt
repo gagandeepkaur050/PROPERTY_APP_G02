@@ -15,11 +15,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class WatchlistActivity : AppCompatActivity() {
+class WatchlistActivity : AppCompatActivity(), ClickDetectorInterface {
 
     private lateinit var binding: ActivityWatchlistBinding
     private val db = Firebase.firestore
     private lateinit var auth: FirebaseAuth
+    var watchlist = mutableListOf<House>()
+    var adapter = WatchlistAdapter(watchlist,this)
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +83,8 @@ class WatchlistActivity : AppCompatActivity() {
         }
 
         val userId = currentUser.uid
-        val watchlist = mutableListOf<House>()
-        val adapter = WatchlistAdapter(watchlist)
+//        val watchlist = mutableListOf<House>()
+//        val adapter = WatchlistAdapter(watchlist)
 
         // Set up RecyclerView
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -130,4 +134,44 @@ class WatchlistActivity : AppCompatActivity() {
             }
     }
 
-}
+    override fun deleteFunction(position: Int) {
+        this.adapter = WatchlistAdapter(watchlist,this)
+
+        Log.d("TESTING","From deletefunction ${position}")
+        Log.d("TESTING", "${auth.currentUser?.uid}")
+
+
+
+        db.collection("userProfiles")
+            .document(auth.currentUser?.uid ?: "")
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val ttt = document.toObject(UserProfile::class.java)
+                    ttt?.watchlist?.removeAt(position)
+                    db.collection("userProfiles")
+                        .document(ttt?.id ?: "")
+                        .update("watchlist", ttt?.watchlist)
+                        .addOnSuccessListener {
+                           // this.adapter.notifyDataSetChanged()
+
+                        }
+                        .addOnFailureListener {
+                            Log.d("TESTING","DELETE FAIL")
+                        }
+            }else {
+                    Log.w("TESTING", "ERROR")
+                }
+
+
+           // .update("watchlist",watchlist)
+//            .addOnSuccessListener { docRef ->
+//                Log.d("TESTING", "Document successfully delete")
+//            }
+//            .addOnFailureListener { ex ->
+//                Log.e("TESTING", "Exception occurred while adding a document : $ex", )
+//            }
+
+    }
+
+}}
