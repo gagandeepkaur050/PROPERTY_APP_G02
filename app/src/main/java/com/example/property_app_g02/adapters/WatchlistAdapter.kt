@@ -45,7 +45,7 @@ class WatchlistAdapter(
         holder.binding.priceText.text = "Price: $" +house.monthPrice.toString()
         holder.binding.bedroomsText.text = "Bedrooms: " + house.numberOfBedrooms.toString()
         Log.d("TESTING","Imgurl:${house.img}")
-       // holder.bind(house)
+        // holder.bind(house)
 
         holder.binding.btnRemove.setOnClickListener {
             clickInterface.deleteFunction(position)

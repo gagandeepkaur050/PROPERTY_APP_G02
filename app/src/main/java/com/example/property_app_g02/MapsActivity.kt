@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.property_app_g02.databinding.ActivityMapsBinding
 import com.example.property_app_g02.models.UserProfile
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,6 +26,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Locale
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -170,7 +172,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     // convert the document to a  object
                     val houseFromDb: House = document.toObject(House::class.java)
                     // 3. do something with the
-                    Log.d("TESTING", "GETADDRESS,${houseFromDb.lat}, ${houseFromDb.long}")
+
 
                     val output = """
                        ${houseFromDb.address}
@@ -181,8 +183,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                
                         """.trimIndent()
                     binding.tvResults.text = output
+                    Log.d("TESTING","Imgurl:${houseFromDb.img}")
+                    Log.d("TESTING", "GETADDRESS,${houseFromDb.lat}, ${houseFromDb.long}")
+                    Glide.with(this)
+                        .load(houseFromDb.img) // URL from the database
+                        .into(binding.imgHouse)
+                    binding.imgHouse.visibility = View.VISIBLE
                     binding.btnWatchList.visibility = View.VISIBLE
-/// updated testing gagan
 
                     binding.btnWatchList.setOnClickListener {
                         val currentUser = auth.currentUser
