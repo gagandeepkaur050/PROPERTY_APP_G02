@@ -102,16 +102,15 @@ class WatchlistActivity : AppCompatActivity() {
                         return@addOnSuccessListener
                     }
 
-                    // Fetch each property from the watchlist
                     for (propertyId in watchlistIds) {
                         if (propertyId.isNotEmpty()) {
                             db.collection("properties")
-                                .document(propertyId) // This should be a valid property document ID
+                                .document(propertyId)
                                 .get()
                                 .addOnSuccessListener { propertyDoc ->
                                     val house = propertyDoc.toObject(House::class.java)
                                     house?.let {
-                                        watchlist.add(it) // Add the house to the list
+                                        watchlist.add(it)
                                         adapter.notifyItemInserted(watchlist.size - 1)
                                     }
                                 }
